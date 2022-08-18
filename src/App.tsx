@@ -1,5 +1,7 @@
+import { CustomSurveyResponseComponent } from 'case-web-ui/build/components/survey/SurveySingleItemView/ResponseComponent/ResponseComponent';
 import React, { useState } from 'react';
 import { Survey, SurveyContext, SurveySingleItemResponse } from 'survey-engine/data_types';
+import { LookupResponseComponent, registerLookupService } from 'grippenet-web-ui';
 import Navbar from './components/NavbarComp';
 import SimulationSetup, { defaultSimulatorUIConfig, defaultSurveyContext } from './components/SimulationSetup';
 import SurveyLoader, { SurveyFileContent } from './components/SurveyLoader';
@@ -17,6 +19,7 @@ interface AppState {
   prefillValues?: SurveySingleItemResponse[],
   screen: Screens;
   simulatorUIConfig: SimulatorUIConfig;
+  customResponseComponents?: CustomSurveyResponseComponent[]
 }
 
 type Screens = 'loader' | 'menu' | 'simulation-setup' | 'simulator';
@@ -25,7 +28,15 @@ const initialState: AppState = {
   screen: 'loader',
   simulatorUIConfig: { ...defaultSimulatorUIConfig },
   surveyContext: { ...defaultSurveyContext },
+  customResponseComponents: [
+    {
+      name: 'postalCodeLookup',
+      component: LookupResponseComponent
+    }
+  ]
 }
+
+registerLookupService('postalcodes', process.env.REACT_APP_POSTALCODES_URL ?? '');
 
 const surveyProviderUrl = process.env.REACT_APP_SURVEY_URL ?? "";
 
@@ -173,6 +184,7 @@ const App: React.FC = () => {
               context: appState.surveyContext
             } : undefined
           }
+          customResponseComponents={appState.customResponseComponents}
           prefills={appState.prefillValues}
           selectedLanguage={appState.selectedLanguage}
           onExit={() => navigateTo('simulation-setup')}
