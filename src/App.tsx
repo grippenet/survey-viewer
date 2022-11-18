@@ -30,7 +30,7 @@ const initialState: AppState = {
   surveyContext: { ...defaultSurveyContext },
   customResponseComponents: [
     {
-      name: ':postalCodeLookup',
+      name: 'input:postalCodeLookup',
       component: LookupResponseComponent
     }
   ]
