@@ -1,10 +1,12 @@
 import { AlertBox, SurveyView, Dialog, DialogBtn } from 'case-web-ui';
-import React, { useState } from 'react';
-import { Dropdown, DropdownButton } from 'react-bootstrap';
+import React, {  useState } from 'react';
+import { Button } from 'react-bootstrap';
 import { Survey, SurveyContext, SurveySingleItemResponse } from 'survey-engine/data_types';
-
 import { nl, nlBE, fr, de, it, da, es, pt } from 'date-fns/locale';
+import { SurveyEngineCore } from 'survey-engine/engine';
+import { EngineState, SurveyInspector } from './SurveyInspector';
 import { CustomSurveyResponseComponent } from 'case-web-ui/build/components/survey/SurveySingleItemView/ResponseComponent/ResponseComponent';
+import clsx from 'clsx';
 
 const dateLocales = [
     { code: 'nl', locale: nl, format: 'dd-MM-yyyy' },
@@ -43,9 +45,31 @@ interface SurveySimulatorProps {
     onExit: () => void;
 }
 
+
 const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
+
+    const surveyDefinition = props.surveyAndContext ? props.surveyAndContext.survey.surveyDefinition : undefined;
+
     const [openSurveyEndDialog, setOpenSurveyEndDialog] = useState(false);
     const [surveyResponseData, setSurveyResponseData] = useState<SurveySingleItemResponse[]>([]);
+
+    const [engineState, setEngineState ] = useState<EngineState>(new EngineState(surveyDefinition));
+    const [evaluatorCounter, setEvaluatorCounter ] = useState<number>(0); // Ok to show the evaluator (after engineReady is true)
+    const [showEvaluator, setShowEvaluator] = useState<boolean>(false);
+
+    const [showKeys, setShowKeys ] = useState<boolean>(props.config.showKeys);
+
+    const onResponseChanged=(responses: SurveySingleItemResponse[], version: string, engine: SurveyEngineCore) => {
+        console.log(responses, engineState.engine, engine);
+        engineState.setEngine(engine);
+        engineState.setResponses(responses);
+        engineState.update();
+        setEvaluatorCounter(evaluatorCounter + 1);
+    }
+    
+    const toggleEvaluator = () => {
+        setShowEvaluator(!showEvaluator)
+    }
 
     const surveySubmitDialog = <Dialog
         title="Survey Finished"
@@ -91,40 +115,23 @@ const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
 
     return (
         <div className="container-fluid">
-            <div className="container pt-3">
+            <div className='row'>
+            <div className="col p-1">
+                        <Button onClick={()=>{ if (window.confirm('Do you want to exit the simulator (will lose state)?')) {
+                                            props.onExit();
+                                        }}} variant="warning" className="me-1"> Exit</Button>
+                        
+                        <Button onClick={toggleEvaluator}>Show inspector</Button>
+                        <label className='d-inline mx-1'><input type="checkbox" checked={showKeys} onClick={()=>setShowKeys(!showKeys)}/> Show keys</label>
+                    </div>
+            </div>
+            <div className={ clsx(showEvaluator ? "container-fluid" : 'container', " pt-3") }>
                 <div className="row">
-                    <DropdownButton
-                        id={`simulator-menu`}
-                        //size="sm"
-                        variant="secondary"
-                        title="Menu"
-                        onSelect={(eventKey) => {
-                            switch (eventKey) {
-                                case 'save':
-                                    break;
-                                case 'exit':
-                                    if (window.confirm('Do you want to exit the simulator (will lose state)?')) {
-                                        props.onExit();
-                                    }
-                                    break;
-                            }
-                        }}
-                    >
-                        <Dropdown.Item
-                            disabled
-                            eventKey="save">Save Current Survey State</Dropdown.Item>
-                        <Dropdown.Divider />
-                        <Dropdown.Item eventKey="exit">Exit Simulator</Dropdown.Item>
-                    </DropdownButton>
-                </div>
-                <div className="row">
-                    <div className="col-12 col-lg-8 offset-lg-2"
-                    //style={{ minHeight: 'calc()' }}
-                    >
+                    <div className={ clsx( showEvaluator ? "col-7" : "col-10") }>
                         {props.surveyAndContext ?
                             <SurveyView
                                 loading={false}
-                                showKeys={props.config.showKeys}
+                                showKeys={showKeys}
                                 survey={props.surveyAndContext.survey}
                                 context={props.surveyAndContext.context}
                                 prefills={props.prefills}
@@ -133,6 +140,7 @@ const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
                                     setSurveyResponseData(responses.slice())
                                     setOpenSurveyEndDialog(true);
                                 }}
+                                onResponsesChanged={onResponseChanged}
                                 nextBtnText={props.config.texts.nextBtn}
                                 backBtnText={props.config.texts.backBtn}
                                 submitBtnText={props.config.texts.submitBtn}
@@ -146,11 +154,15 @@ const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
                             />
                         }
                     </div>
+                    <div className={ clsx( showEvaluator ? "col-5" : "d-none" ) }>
+                        { evaluatorCounter ? <SurveyInspector engineState={engineState} update={evaluatorCounter} /> : '' }
+                    </div>
                 </div>
             </div>
             {surveySubmitDialog}
         </div >
     );
 };
+
 
 export default SurveySimulator;
