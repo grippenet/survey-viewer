@@ -52,5 +52,9 @@ export const GnParticipantFlags = {
         needLocation: {
             "label":"Need location question to show up",
             values: BooleanValues,
+        },
+        ansmQ7skip: {
+            "label":"Skip weekly.ansmQ7",
+            values: BooleanValues,
         }
 };
