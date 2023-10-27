@@ -5645,10 +5645,10 @@ graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.6.tgz#ff040b2b0853b23c3d31027523706f1885d76bee"
   integrity sha512-nTnJ528pbqxYanhpDYsi4Rd8MAeaBA67+RZ10CM1m3bTAVFEDcd5AuA4a6W5YkGZ1iNXHzZz8T6TBKLeBuNriQ==
 
-grippenet-web-ui@1.2.4:
-  version "1.2.4"
-  resolved "https://registry.yarnpkg.com/grippenet-web-ui/-/grippenet-web-ui-1.2.4.tgz#b694e6e32a7fc8231ad61531771cf5276fb445d0"
-  integrity sha512-NYnmPY4ugkShukzsMMcJkJXyQWqj77oyRLTqEeuhXb7mNrinLD/HTBzYcgISYOaIG0qfOCtNmLVKdkK9UFxfug==
+grippenet-web-ui@1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/grippenet-web-ui/-/grippenet-web-ui-1.2.5.tgz#67e449244c5f657173afb26042854d1d9c20c80b"
+  integrity sha512-U0yN+m4Tj87hvyu0kfnSlCFTs/1I0A2oQUiN5RShdPCcT8eiRuKU+rBh/n8ADSvcsdZhMRxfWBfOqr/00xsNFw==
 
 growly@^1.3.0:
   version "1.3.0"
