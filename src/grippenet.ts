@@ -1,4 +1,4 @@
-import { LookupResponseComponent, BMIResponseComponent, registerLookupService } from 'grippenet-web-ui';
+import { LookupResponseComponent, BMIResponseComponent, RandomCodeComponent, registerLookupService } from 'grippenet-web-ui';
 
 export const customResponseComponents = [
     {
@@ -8,6 +8,10 @@ export const customResponseComponents = [
     {
         name: 'input:bmi',
         component: BMIResponseComponent
+    },
+    {
+        name:"input:randomCode",
+        component: RandomCodeComponent
     }
 ];
 
