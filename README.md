@@ -24,6 +24,17 @@ yarn build
 
 The deployable website will be in 'build' directory
 
+## Configuration
+
+- It's possible to customize several parts either via environment variable (in .env.local for example) or by modifying localConfig.ts for complex structure (described below in customize section).
+
+Environement variables 
+
+- `REACT_APP_TITLE` : Application title, by default "CASE viewer"
+- `REACT_APP_DEFAULT_SURVEY_LANGUAGES` : Coma separated list of language code to select default language in first (first available in survey win)
+- `REACT_APP_SURVEY_URL` : Survey provided URL (see Survey Definition Source section)
+- `REACT_APP_CSP_CONNECT_URLS` : CSP to allow the website to connect to this domain (needed if you use other domain for survey provider)
+
 ## Survey Definition Source
 
 2 ways are proposed to view a survey :
