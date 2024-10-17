@@ -10,7 +10,7 @@ interface SurveyLoaderProps {
 
 const SurveyLoader: React.FC<SurveyLoaderProps> = (props) => {
     const texts = {
-        title: 'Load Survey',
+        title: 'Load Survey from a json file',
         btn: {
             open: 'Open',
             useUrl: 'use url'

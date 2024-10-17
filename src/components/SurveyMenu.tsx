@@ -11,7 +11,7 @@ import { format } from 'date-fns';
 
 interface SurveyMenuProps {
     survey: Survey;
-    selectedLanguage: string;
+    defaultSurveyLanguages: string[];
     customResponseComponents?: CustomSurveyResponseComponent[]
     participantFlags: ParticipantFlags
     onExit: () => void;
@@ -75,7 +75,7 @@ const SurveyMenu: React.FC<SurveyMenuProps> = (props) => {
                     config={simulatorUIConfig}
                     surveyAndContext={surveyAndContext}
                     prefills={prefillValues}
-                    selectedLanguage={props.selectedLanguage}
+                    defaultSurveyLanguages={props.defaultSurveyLanguages}
                     onExit={() => props.onExit()}
                     onReset={handleReset}
                     customResponseComponents={props.customResponseComponents}
