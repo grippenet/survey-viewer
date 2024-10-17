@@ -5,13 +5,16 @@ import SurveyLoader from './components/SurveyLoader';
 import SurveyMenu from './components/SurveyMenu';
 import SurveyServiceLoader from './components/SurveyServiceLoader';
 import { registerCustomComponents, registerParticipantFlags } from './localConfig';
+
 interface AppState {
-  selectedLanguage?: string;
-  languageCodes?: string[];
+  selectedAppLanguage?: string; // Language of the Application (for future translation)
   surveyKey?: string;
   survey?: Survey;
   screen: Screens;
 }
+
+// Application translations, currently only english is provided.
+const availableAppLanguages : string[] = ['en'];
 
 const customResponseComponents = registerCustomComponents();
 const participantFlags = registerParticipantFlags();
@@ -26,6 +29,18 @@ const surveyProviderUrl = process.env.REACT_APP_SURVEY_URL ?? "";
 
 console.log("Using provider "+ surveyProviderUrl);
 
+// Default languages to show in the survey. If several use the first available in the survey.
+// You can customize the default survey languages by definiing REACT_APP_DEFAULT_SURVEY_LANGUAGES env variable
+const defaultSurveyLanguages : string[] = (()=>{
+  let defaultLang: string[] = ['en'];
+  const envLang = process.env.REACT_APP_DEFAULT_SURVEY_LANGUAGES ?? "";
+  if(envLang) {
+    defaultLang = envLang.split(',').map(v => v.trim());
+  }
+  return defaultLang;
+})();
+
+
 const App: React.FC = () => {
   const [appState, setAppState] = useState<AppState>({
     ...initialState
@@ -37,11 +52,6 @@ const App: React.FC = () => {
       return;
     }
 
-    const languageCodes = surveyObject.props?.name?.map(o => o.code);
-    if (!languageCodes || languageCodes.length < 1) {
-      alert('Languages cannot be extracted');
-      return;
-    }
 
     const surveyDef = surveyObject.surveyDefinition;
 
@@ -49,8 +59,7 @@ const App: React.FC = () => {
 
     setAppState({
       ...initialState,
-      selectedLanguage: languageCodes[0],
-      languageCodes: languageCodes,
+      selectedAppLanguage: availableAppLanguages[0],
       surveyKey: surveyKey,
       screen: 'menu',
       survey: surveyObject
@@ -78,22 +87,22 @@ const App: React.FC = () => {
         }}>
           <div className="row flex-grow-1">
             <div className="col-12">
-            <SurveyLoader onSurveyLoaded={onLoadSurvey}/>
             {
                 surveyProviderUrl ? <SurveyServiceLoader onSurveyLoaded={onLoadSurvey} surveyProviderUrl={surveyProviderUrl} /> : null
             }
+            <SurveyLoader onSurveyLoaded={onLoadSurvey}/>
             </div>
           </div>
         </div>
         
       case 'menu':
-        if (!appState.selectedLanguage || !appState.survey) {
+        if (!appState.selectedAppLanguage || !appState.survey) {
           reset();
           return null;
         }
         return <SurveyMenu
           participantFlags={participantFlags}
-          selectedLanguage={appState.selectedLanguage}
+          defaultSurveyLanguages={defaultSurveyLanguages}
           survey={appState.survey}
           customResponseComponents={customResponseComponents}
           onExit={() => {
@@ -110,13 +119,13 @@ const App: React.FC = () => {
     }}>
       <Navbar
         surveyName={appState.surveyKey}
-        selectedLanguage={appState.selectedLanguage}
-        languagecodes={appState.languageCodes}
+        selectedLanguage={appState.selectedAppLanguage}
+        languagecodes={availableAppLanguages}
         onSelectLanguage={(code) => {
           setAppState(prev => {
             return {
               ...prev,
-              selectedLanguage: code
+              selectedAppLanguage: code
             }
           })
         }}

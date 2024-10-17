@@ -12,7 +12,7 @@ const NavbarComp: React.FC<NavbarCompProps> = (props) => {
 
     const languageSelector = (codes: string[]) => {
         return (<Nav className="ms-auto">
-            <Navbar.Text className='me-1'>Language</Navbar.Text> 
+            <Navbar.Text className='me-1'>Application Language</Navbar.Text> 
             {(codes.length === 1) ?
                 <Navbar.Text>{codes[0]}</Navbar.Text> :
                 <NavDropdown title={props.selectedLanguage} align="end" id="basic-nav-dropdown">
@@ -34,7 +34,7 @@ const NavbarComp: React.FC<NavbarCompProps> = (props) => {
         <Navbar bg="primary" variant="dark" className="py-1a">
             <div className="container">
                 <Navbar.Brand>
-                    CASE <span> Viewer</span>
+                    { process.env.REACT_APP_TITLE ?? "CASE Viewer" }
                 </Navbar.Brand>
                 {props.surveyName ? <Navbar.Text>{props.surveyName}</Navbar.Text> : null}
                 {props.languagecodes ? languageSelector(props.languagecodes) : null}

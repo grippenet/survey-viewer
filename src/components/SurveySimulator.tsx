@@ -39,7 +39,7 @@ interface SurveySimulatorProps {
     config: SimulatorUIConfig;
     surveyAndContext?: SurveyAndContext;
     prefills?: SurveySingleItemResponse[];
-    selectedLanguage?: string;
+    defaultSurveyLanguages: string[];
     customResponseComponents?:CustomSurveyResponseComponent[]
     onExit: () => void;
     onSaveAsPrefill: (p: SurveySingleItemResponse[])=>void;
@@ -51,6 +51,12 @@ const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
 
     const surveyDefinition = props.surveyAndContext ? props.surveyAndContext.survey.surveyDefinition : undefined;
 
+    const languageCodes: string[] = []; // Available language codes in the survey
+
+    if(props.surveyAndContext?.survey) {
+        props.surveyAndContext.survey.props?.name?.map(o => languageCodes.push(o.code));
+    }
+
     const [openSurveyEndDialog, setOpenSurveyEndDialog] = useState(false);
     const [surveyResponseData, setSurveyResponseData] = useState<SurveySingleItemResponse[]>([]);
 
@@ -59,6 +65,17 @@ const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
     const [showEvaluator, setShowEvaluator] = useState<boolean>(false);
 
     const [showKeys, setShowKeys ] = useState<boolean>(props.config.showKeys);
+
+    const [languageCode, setLanguageCode] = useState<string>(()=> {
+        let defaultLanguage = 'en'; // fallback
+        if(languageCodes) {
+            const def = props.defaultSurveyLanguages.find(lang => languageCodes.includes(lang));
+            if(def) {
+                defaultLanguage = def;
+            }
+        }
+        return defaultLanguage;
+    });
 
     const onResponseChanged=(responses: SurveySingleItemResponse[], version: string, engine?: SurveyEngineCore) => {
         console.log(responses, engineState.engine, engine);
@@ -131,22 +148,31 @@ const SurveySimulator: React.FC<SurveySimulatorProps> = (props) => {
 
     </Dialog>
 
-    console.log('prefills', props.prefills);
+    const languageSelector = (code:string, index:number) => {
+        const btn = code == languageCode ? 'btn-primary' : 'btn-info';
+        return <li key={index} className='ml-1 p-1'><span className={clsx("btn btn-sm rounded", btn)} onClick={()=>setLanguageCode(code)}>{code}</span></li>;
+    }
 
-    const languageCode = props.selectedLanguage ? props.selectedLanguage : 'en';
+    console.log('prefills', props.prefills);
 
     return (
         <div className="container-fluid">
             <div className='row'>
             <div className="col p-1">
-                        <Button onClick={()=>{ if (window.confirm('Do you want to exit the simulator (will lose state)?')) {
-                                            props.onExit();
-                                        }}} variant="warning" className="me-1"> Exit</Button>
-                        
-                        <Button className="me-1"  onClick={toggleEvaluator}>Show inspector</Button>
-                        <Button className="me-1"  onClick={()=>props.onReset()}>Reset survey</Button>
-                        <label className='d-inline mx-1'><input type="checkbox" checked={showKeys} onClick={()=>setShowKeys(!showKeys)}/> Show keys</label>
-                    </div>
+                <Button onClick={()=>{ if (window.confirm('Do you want to exit the simulator (will lose state)?')) {
+                                    props.onExit();
+                                }}} variant="warning" className="me-1"> Exit</Button>
+                
+                <Button className="me-1"  onClick={toggleEvaluator}>Show inspector</Button>
+                <Button className="me-1"  onClick={()=>props.onReset()}>Reset survey</Button>
+                <label className='d-inline mx-1'><input type="checkbox" checked={showKeys} onClick={()=>setShowKeys(!showKeys)}/> Show keys</label>
+                <div className='d-inline p-1 border rounded'>
+                Languages : 
+                <ul className="list-inline">
+                    { languageCodes.map(languageSelector) }
+                </ul>                
+                </div>
+            </div>
             </div>
             <div className={ clsx(showEvaluator ? "container-fluid" : 'container', " pt-3") }>
                 <div className="row">
