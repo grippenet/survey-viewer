@@ -4,6 +4,7 @@ import { Expression, ExpressionArg, isExpression, isItemGroupComponent, isSurvey
 import clsx from 'clsx';
 
 import { SurveyEngineCore } from 'survey-engine/engine';
+import { expressiontoFunctional } from './utils';
 
 /**
  * Reference to an expression in a survey
@@ -157,34 +158,16 @@ export const ExpressionList: React.FC<ExpressionListProps> = (props) => {
    
     const [refresh, setRefresh] = useState(false);
 
-    const toFunc = (e: Expression):string => {
-        var p : string[];
-
-        if(e.data) {
-           p = e.data.map(arg => {
-            if(arg.dtype) {
-               if(arg.dtype === "exp" && arg.exp) {
-                    return toFunc(arg.exp);
-               }
-               if(arg.dtype === "num") {
-                    return '' + arg.num;
-               }
-            }
-            return '"' + arg.str + '"';
-           });
-        } else {
-            p = [];
-        }
-        return e.name + '(' + p.join(',') + ')';
-    }
+    
 
     const ExpItem = (itemKey: string, ref: ExpressionRef, index: number) => {
         return <ListGroup.Item key={itemKey + '=' + index} className={clsx({'bg-warning': ref.changed})}>
             <span>
                 <small className='me-1'>{itemKey}{ref.key ? ' [' + ref.key + ']' : ''}</small> 
                 <b>{ref.field}</b> 
+                <button type="button" className='btn btn-info btn-sm ms-1' onClick={()=>props.onSelect(ref.exp)} title="Add it to custom panel">+</button>
             </span>
-            <p><code>{ toFunc(ref.exp) }</code></p>
+            <p><code>{ expressiontoFunctional(ref.exp) }</code></p>
             <p>{ JSON.stringify(ref.value) }</p>
         </ListGroup.Item>
     };

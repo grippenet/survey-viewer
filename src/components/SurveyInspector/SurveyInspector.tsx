@@ -6,6 +6,7 @@ import clsx from 'clsx';
 
 import { EngineState, ExpressionList } from "./ExpressionEvaluator";
 import { ResponsesList } from "./ResponseList";
+import { expressiontoFunctional } from './utils';
 
 interface SurveyInspectorProps {
     engineState: EngineState
@@ -66,11 +67,15 @@ export const SurveyInspector: React.FC<SurveyInspectorProps> = (props) => {
                         }}
                     />
                 <Button onClick={evaluateExpression} disabled={hasEditorErrors}>Evaluate</Button>
-                <div>
-                    <h5>Result</h5>
+                <div className='mt-1 p-2 border rounded'>
+                <h6>Expression</h6>
+                 <code>{ expression ? expressiontoFunctional(expression) : ''}</code>
+                </div>
+                <div className='mt-1'>
+                   <h6>Evaluation result</h6>
                     <Editor
                         height="150px"
-                        options={{readOnly: true}}
+                        options={{readOnly: true, lineNumbers: "off", minimap: {enabled: false}}}
                         defaultLanguage="json"
                         value={result ? JSON.stringify(result) : ''}
                     />
